@@ -1,16 +1,22 @@
 import { useState } from 'react'
 import './App.css'
-import AudioRecorder from './AudioRecorder';
+import { Record } from "../components/Recorder.jsx"
 
 function App() {
-  const [audio, setAudio] = useState(null);
+
+  const [myState, setMyState] = useState("Welcome to our react app, blud");
+
+
+  function recordOn() {
+    setMyState(prev => prev + " hi "); 
+  }
 
   return (
     <>
-      <h1>Click the record button below to start recording</h1>
-      <AudioRecorder setAudioCallback={setAudio}/>
+      <h1>{myState}</h1>
+      <Record></Record>
     </>
-  );
+  )
 }
 
-export default App;
+export default App

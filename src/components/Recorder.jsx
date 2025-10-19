@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { startTranscription }  from '../api/Transcribe.jsx'
 
 export const Record = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -9,6 +10,8 @@ export const Record = () => {
   const mediaRecorder = useRef(null);
   const chunks = useRef([]);
   const timerRef = useRef(null);
+
+  const [transcription, setTranscription] = useState("")
 
   const startRecording = async () => {
     try {
@@ -45,15 +48,29 @@ export const Record = () => {
     }
   };
 
-  const stopRecording = () => {
+  const stopRecording = async () => {
     setIsRecording(false);
-    if (mediaRecorder.current && mediaRecorder.current.state !== 'inactive') {
+    if (mediaRecorder.current && mediaRecorder.current.state !== "inactive") {
       mediaRecorder.current.stop();
-      if (mediaStream.current) {
-        mediaStream.current.getTracks().forEach((track) => track.stop());
-      }
+      mediaStream.current?.getTracks().forEach((track) => track.stop());
     }
+  
+    // Wait for recordedURL to be ready
+    setTimeout(async () => {
+      const blob = await fetch(recordedURL).then((r) => r.blob());
+      const formData = new FormData();
+      formData.append("file", blob, "audio.mp3");
+  
+      const res = await fetch("/api/transcribe", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const data = await res.json();
+      setTranscription(data.text);
+    }, 1000);
   };
+  
 
   const getRecordedURL = () => {
     return recordedURL;
@@ -95,6 +112,7 @@ export const Record = () => {
       )}
     <br></br>
       {recordedURL && <audio controls src={recordedURL} />}
+    <p>{transcription}</p>
     </div>
   );
 

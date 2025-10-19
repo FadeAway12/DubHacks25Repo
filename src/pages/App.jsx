@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { Record, getRecordedURL } from "../components/Recorder.jsx"
+import { Record } from ".././components/Recorder.jsx"
 
 function App() {
 
